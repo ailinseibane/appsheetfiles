@@ -9,39 +9,49 @@
             font-family: 'Arial', sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 800px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        
+        * {
+            box-sizing: border-box;
         }
         
         .header {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             border-bottom: 2px solid #eaeaea;
-            padding-bottom: 20px;
+            padding-bottom: 15px;
+            width: 100%;
         }
         
         .logo {
-            max-width: 150px;
+            max-width: 130px;
+            margin-bottom: 10px;
         }
         
         .title {
             text-align: center;
-            font-size: 24px;
+            font-size: 20px;
             margin: 0;
-            color: #d93025; /* Color rojo similar al del logo */
+            color: #d93025;
+            width: 100%;
         }
         
         .info-container {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
+            flex-direction: column;
+            margin-bottom: 20px;
+            width: 100%;
         }
         
         .info-section {
-            flex: 1;
+            width: 100%;
+            margin-bottom: 10px;
         }
         
         .info-section p {
@@ -50,30 +60,56 @@
         
         .label {
             font-weight: bold;
-            color: #d93025; /* Color rojo similar al del logo */
+            color: #d93025;
+        }
+        
+        .observations {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #d93025;
+            width: 100%;
+            word-wrap: break-word;
+        }
+        
+        h3 {
+            color: #d93025;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 5px;
+            width: 100%;
+        }
+        
+        /* Tabla responsive */
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+            margin-bottom: 20px;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            min-width: 500px; /* Ancho mínimo para mantener la legibilidad */
         }
         
         th {
-            background-color: #d93025; /* Color rojo similar al del logo */
+            background-color: #d93025;
             color: white;
             text-align: left;
-            padding: 12px;
+            padding: 8px;
+            font-size: 14px;
         }
         
         td {
-            padding: 10px 12px;
+            padding: 8px;
             border-bottom: 1px solid #eaeaea;
-            white-space: nowrap; /* Evita saltos de línea dentro de las celdas */
+            font-size: 14px;
         }
         
         td:nth-child(2) {
-            white-space: normal; /* Permitir saltos de línea solo en la descripción */
+            white-space: normal;
+            word-break: break-word;
         }
         
         tr:nth-child(even) {
@@ -83,46 +119,75 @@
         .total-section {
             text-align: right;
             margin-top: 20px;
+            width: 100%;
         }
         
         .total {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            color: #d93025; /* Color rojo similar al del logo */
+            color: #d93025;
         }
         
-        .observations {
-            margin-top: 20px;
+        .no-products {
+            text-align: center;
             padding: 15px;
             background-color: #f9f9f9;
             border-radius: 5px;
-            border-left: 4px solid #d93025; /* Borde lateral con el color del logo */
+            margin-bottom: 20px;
+            color: #666;
+            font-style: italic;
+            width: 100%;
         }
         
         .footer {
-            margin-top: 40px;
+            margin-top: 30px;
             text-align: center;
             font-size: 12px;
-            color: #666; /* Gris oscuro, secundario del logo */
-            border-top: 1px solid #eaeaea;
-            padding-top: 20px;
-        }
-        
-        h3 {
-            color: #d93025; /* Color rojo similar al del logo */
-            border-bottom: 1px solid #eaeaea;
-            padding-bottom: 5px;
-        }
-        
-        /* Mensaje cuando no hay productos */
-        .no-products {
-            text-align: center;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            margin-bottom: 30px;
             color: #666;
-            font-style: italic;
+            border-top: 1px solid #eaeaea;
+            padding-top: 15px;
+            width: 100%;
+        }
+        
+        /* Media queries para dispositivos más grandes */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+                max-width: 800px;
+            }
+            
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                padding-bottom: 20px;
+            }
+            
+            .logo {
+                margin-bottom: 0;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+            
+            .info-container {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            
+            .info-section {
+                flex: 1;
+                margin-bottom: 0;
+            }
+            
+            th, td {
+                padding: 10px 12px;
+                font-size: 16px;
+            }
+            
+            .total {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -149,21 +214,23 @@
     
     <h3>Productos</h3>
     <div id="productosContainer">
-        <table id="productosTabla">
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Descripción</th>
-                    <th>Cant.</th>
-                    <th>Precio unitario</th>
-                    <th>Desc.</th>
-                    <th>Precio final</th>
-                </tr>
-            </thead>
-            <tbody id="tablaProductos">
-                <!-- Filas dinámicas se agregarán aquí -->
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table id="productosTabla">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Cant.</th>
+                        <th>Precio unitario</th>
+                        <th>Desc.</th>
+                        <th>Precio final</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaProductos">
+                    <!-- Filas dinámicas se agregarán aquí -->
+                </tbody>
+            </table>
+        </div>
         <div id="noProductsMessage" class="no-products" style="display: none;">
             No hay productos para mostrar
         </div>
