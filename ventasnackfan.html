@@ -69,6 +69,11 @@
         td {
             padding: 10px 12px;
             border-bottom: 1px solid #eaeaea;
+            white-space: nowrap; /* Evita saltos de línea dentro de las celdas */
+        }
+        
+        td:nth-child(2) {
+            white-space: normal; /* Permitir saltos de línea solo en la descripción */
         }
         
         tr:nth-child(even) {
@@ -108,6 +113,17 @@
             border-bottom: 1px solid #eaeaea;
             padding-bottom: 5px;
         }
+        
+        /* Mensaje cuando no hay productos */
+        .no-products {
+            text-align: center;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -132,21 +148,26 @@
     </div>
     
     <h3>Productos</h3>
-    <table id="productosTabla">
-        <thead>
-            <tr>
-                <th>Código</th>
-                <th>Descripción</th>
-                <th>Cant.</th>
-                <th>Precio unitario</th>
-                <th>Desc.</th>
-                <th>Precio final</th>
-            </tr>
-        </thead>
-        <tbody id="tablaProductos">
-            <!-- Filas dinámicas se agregarán aquí -->
-        </tbody>
-    </table>
+    <div id="productosContainer">
+        <table id="productosTabla">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Cant.</th>
+                    <th>Precio unitario</th>
+                    <th>Desc.</th>
+                    <th>Precio final</th>
+                </tr>
+            </thead>
+            <tbody id="tablaProductos">
+                <!-- Filas dinámicas se agregarán aquí -->
+            </tbody>
+        </table>
+        <div id="noProductsMessage" class="no-products" style="display: none;">
+            No hay productos para mostrar
+        </div>
+    </div>
     
     <div class="total-section">
         <p class="total">Total pedido: <span id="totalPedido"></span></p>
@@ -170,26 +191,54 @@
             return '$ ' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
         
+        // Función para formatear fecha
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            
+            try {
+                const date = new Date(dateString);
+                
+                // Verificar si la fecha es válida
+                if (isNaN(date.getTime())) {
+                    return dateString; // Devolver la cadena original si no es una fecha válida
+                }
+                
+                // Formatear como DD/MM/YYYY
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear();
+                
+                return `${day}/${month}/${year}`;
+            } catch (e) {
+                return dateString; // En caso de error, devolver la cadena original
+            }
+        }
+        
         // Cargar datos desde los parámetros de la URL
         document.addEventListener('DOMContentLoaded', function() {
             // Datos del encabezado
-            document.getElementById('fecha').textContent = getUrlParameter('fecha') || '30/1/2025';
-            document.getElementById('cliente').textContent = getUrlParameter('cliente') || 'Cliente no especificado';
-            document.getElementById('estado').textContent = getUrlParameter('estado') || 'PENDIENTE DE COBRO';
-            //document.getElementById('numeroPedido').textContent = getUrlParameter('numeroPedido') || '';
-            document.getElementById('observaciones').textContent = getUrlParameter('observaciones') || '';
+            document.getElementById('fecha').textContent = formatDate(getUrlParameter('fecha'));
+            document.getElementById('cliente').textContent = getUrlParameter('cliente') || '';
+            document.getElementById('estado').textContent = getUrlParameter('estado') || '';
+            document.getElementById('numeroPedido').textContent = getUrlParameter('numeroPedido') || '';
+            
+            // Manejar observaciones (mostrar guión si está vacío)
+            const obsValue = getUrlParameter('observaciones');
+            document.getElementById('observaciones').textContent = obsValue === '-' ? '' : obsValue;
             
             // Obtener productos desde URL
             const productosData = getUrlParameter('productos');
             const tablaProductos = document.getElementById('tablaProductos');
+            const tablaProductosElem = document.getElementById('productosTabla');
+            const noProductsMessage = document.getElementById('noProductsMessage');
             let totalPedido = 0;
             
-            if (productosData) {
-                // La estructura esperada es: "codigo1|descripcion1|cantidad1|precioUnitario1|descuento1;codigo2|descripcion2|cantidad2|precioUnitario2|descuento2"
+            if (productosData && productosData.trim() !== '') {
+                // La estructura esperada es: "codigo1|descripcion1|cantidad1|precioUnitario1|descuento1|precioFinal1, codigo2|..."
                 const productos = productosData.split(',');
                 
                 productos.forEach(producto => {
-                    const datos = producto.split('|');
+                    const datos = producto.trim().split('|');
                     if (datos.length >= 5) {
                         const codigo = datos[0];
                         const descripcion = datos[1];
@@ -197,7 +246,14 @@
                         const precioUnitario = parseFloat(datos[3]);
                         const descuento = datos[4];
                         
-                        const precioFinal = cantidad * precioUnitario;
+                        // Si hay precio final proporcionado, usar ese, de lo contrario calcularlo
+                        let precioFinal;
+                        if (datos.length >= 6 && datos[5]) {
+                            precioFinal = parseFloat(datos[5]);
+                        } else {
+                            precioFinal = cantidad * precioUnitario;
+                        }
+                        
                         totalPedido += precioFinal;
                         
                         const row = document.createElement('tr');
@@ -212,41 +268,13 @@
                         tablaProductos.appendChild(row);
                     }
                 });
-            } else {
-                // Ejemplo de productos si no se proporciona ninguno
-                const ejemploProductos = [
-                    {
-                        codigo: 'A0071',
-                        descripcion: 'Barritas Wik Protein x 33 gr. Caja x 15 u',
-                        cantidad: 15,
-                        precioUnitario: 1198.95,
-                        descuento: 0,
-                        precioFinal: 17984.25
-                    },
-                    {
-                        codigo: 'A0055',
-                        descripcion: 'Barrita SIN TACC WiK Taste quinoa y chocolate. Caja 20 u',
-                        cantidad: 20,
-                        precioUnitario: 682.64,
-                        descuento: 0,
-                        precioFinal: 13652.80
-                    }
-                ];
                 
-                ejemploProductos.forEach(producto => {
-                    totalPedido += producto.precioFinal;
-                    
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${producto.codigo}</td>
-                        <td>${producto.descripcion}</td>
-                        <td>${producto.cantidad}</td>
-                        <td>${formatCurrency(producto.precioUnitario)}</td>
-                        <td>${producto.descuento} %</td>
-                        <td>${formatCurrency(producto.precioFinal)}</td>
-                    `;
-                    tablaProductos.appendChild(row);
-                });
+                tablaProductosElem.style.display = 'table';
+                noProductsMessage.style.display = 'none';
+            } else {
+                // No hay productos para mostrar
+                tablaProductosElem.style.display = 'none';
+                noProductsMessage.style.display = 'block';
             }
             
             // Establecer el total
@@ -255,7 +283,10 @@
             
             // Fecha de generación
             const today = new Date();
-            document.getElementById('fechaGeneracion').textContent = today.toLocaleDateString('es-ES');
+            const day = today.getDate().toString().padStart(2, '0');
+            const month = (today.getMonth() + 1).toString().padStart(2, '0');
+            const year = today.getFullYear();
+            document.getElementById('fechaGeneracion').textContent = `${day}/${month}/${year}`;
         });
     </script>
 </body>
