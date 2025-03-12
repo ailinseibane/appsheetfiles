@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Pedido</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 20px;
+        }
+        
+        .logo {
+            max-width: 150px;
+        }
+        
+        .title {
+            text-align: center;
+            font-size: 24px;
+            margin: 0;
+            color: #d93025; /* Color rojo similar al del logo */
+        }
+        
+        .info-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .info-section {
+            flex: 1;
+        }
+        
+        .info-section p {
+            margin: 5px 0;
+        }
+        
+        .label {
+            font-weight: bold;
+            color: #d93025; /* Color rojo similar al del logo */
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        th {
+            background-color: #d93025; /* Color rojo similar al del logo */
+            color: white;
+            text-align: left;
+            padding: 12px;
+        }
+        
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .total-section {
+            text-align: right;
+            margin-top: 20px;
+        }
+        
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d93025; /* Color rojo similar al del logo */
+        }
+        
+        .observations {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #d93025; /* Borde lateral con el color del logo */
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #666; /* Gris oscuro, secundario del logo */
+            border-top: 1px solid #eaeaea;
+            padding-top: 20px;
+        }
+        
+        h3 {
+            color: #d93025; /* Color rojo similar al del logo */
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img id="logoImage" class="logo" alt="Logo empresa" src="https://www.appsheet.com:443/fsimage.png?appid=00cd8d09-ecca-46dc-a407-2072bb5e31ed&datasource=google&filename=DocId%3D1YPBrOsAPF2g2YZKdGRjd1QO0ukSI16z7&signature=675dfc36596c91c5d26fb74eb235c605cd41d6abe9a672a756e7049a97e0279c&tableprovider=google&userid=5955407">
+        <h1 class="title">DETALLE DE PEDIDO</h1>
+    </div>
+    
+    <div class="info-container">
+        <div class="info-section">
+            <p><span class="label">Fecha:</span> <span id="fecha"></span></p>
+            <p><span class="label">Cliente:</span> <span id="cliente"></span></p>
+        </div>
+        <div class="info-section">
+            <p><span class="label">Estado:</span> <span id="estado"></span></p>
+            <p><span class="label">Número de Pedido:</span> <span id="numeroPedido"></span></p>
+        </div>
+    </div>
+    
+    <div class="observations">
+        <p><span class="label">Observaciones:</span> <span id="observaciones"></span></p>
+    </div>
+    
+    <h3>Productos</h3>
+    <table id="productosTabla">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Descripción</th>
+                <th>Cant.</th>
+                <th>Precio unitario</th>
+                <th>Desc.</th>
+                <th>Precio final</th>
+            </tr>
+        </thead>
+        <tbody id="tablaProductos">
+            <!-- Filas dinámicas se agregarán aquí -->
+        </tbody>
+    </table>
+    
+    <div class="total-section">
+        <p class="total">Total pedido: <span id="totalPedido"></span></p>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 - Documento generado el <span id="fechaGeneracion"></span></p>
+    </div>
+
+    <script>
+        // Función para obtener parámetros de la URL
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+        
+        // Función para formatear números como moneda
+        function formatCurrency(amount) {
+            return '$ ' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+        
+        // Cargar datos desde los parámetros de la URL
+        document.addEventListener('DOMContentLoaded', function() {
+            // Datos del encabezado
+            document.getElementById('fecha').textContent = getUrlParameter('fecha') || '30/1/2025';
+            document.getElementById('cliente').textContent = getUrlParameter('cliente') || 'Cliente no especificado';
+            document.getElementById('estado').textContent = getUrlParameter('estado') || 'PENDIENTE DE COBRO';
+            document.getElementById('numeroPedido').textContent = getUrlParameter('numeroPedido') || '';
+            document.getElementById('observaciones').textContent = getUrlParameter('observaciones') || '';
+            
+            // Obtener productos desde URL
+            const productosData = getUrlParameter('productos');
+            const tablaProductos = document.getElementById('tablaProductos');
+            let totalPedido = 0;
+            
+            if (productosData) {
+                // La estructura esperada es: "codigo1|descripcion1|cantidad1|precioUnitario1|descuento1;codigo2|descripcion2|cantidad2|precioUnitario2|descuento2"
+                const productos = productosData.split(',');
+                
+                productos.forEach(producto => {
+                    const datos = producto.split('|');
+                    if (datos.length >= 5) {
+                        const codigo = datos[0];
+                        const descripcion = datos[1];
+                        const cantidad = parseInt(datos[2]);
+                        const precioUnitario = parseFloat(datos[3]);
+                        const descuento = datos[4];
+                        
+                        const precioFinal = cantidad * precioUnitario;
+                        totalPedido += precioFinal;
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${codigo}</td>
+                            <td>${descripcion}</td>
+                            <td>${cantidad}</td>
+                            <td>${formatCurrency(precioUnitario)}</td>
+                            <td>${descuento} %</td>
+                            <td>${formatCurrency(precioFinal)}</td>
+                        `;
+                        tablaProductos.appendChild(row);
+                    }
+                });
+            } else {
+                // Ejemplo de productos si no se proporciona ninguno
+                const ejemploProductos = [
+                    {
+                        codigo: 'A0071',
+                        descripcion: 'Barritas Wik Protein x 33 gr. Caja x 15 u',
+                        cantidad: 15,
+                        precioUnitario: 1198.95,
+                        descuento: 0,
+                        precioFinal: 17984.25
+                    },
+                    {
+                        codigo: 'A0055',
+                        descripcion: 'Barrita SIN TACC WiK Taste quinoa y chocolate. Caja 20 u',
+                        cantidad: 20,
+                        precioUnitario: 682.64,
+                        descuento: 0,
+                        precioFinal: 13652.80
+                    }
+                ];
+                
+                ejemploProductos.forEach(producto => {
+                    totalPedido += producto.precioFinal;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${producto.codigo}</td>
+                        <td>${producto.descripcion}</td>
+                        <td>${producto.cantidad}</td>
+                        <td>${formatCurrency(producto.precioUnitario)}</td>
+                        <td>${producto.descuento} %</td>
+                        <td>${formatCurrency(producto.precioFinal)}</td>
+                    `;
+                    tablaProductos.appendChild(row);
+                });
+            }
+            
+            // Establecer el total
+            const totalParametro = getUrlParameter('total');
+            document.getElementById('totalPedido').textContent = totalParametro ? formatCurrency(totalParametro) : formatCurrency(totalPedido);
+            
+            // Fecha de generación
+            const today = new Date();
+            document.getElementById('fechaGeneracion').textContent = today.toLocaleDateString('es-ES');
+        });
+    </script>
+</body>
+</html>
