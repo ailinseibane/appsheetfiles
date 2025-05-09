@@ -1,360 +1,133 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle de Pedido</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        
-        * {
-            box-sizing: border-box;
-        }
-        
-        .header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #eaeaea;
-            padding-bottom: 15px;
-            width: 100%;
-        }
-        
-        .logo {
-            max-width: 130px;
-            margin-bottom: 10px;
-        }
-        
-        .title {
-            text-align: center;
-            font-size: 20px;
-            margin: 0;
-            color: #d93025;
-            width: 100%;
-        }
-        
-        .info-container {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-        
-        .info-section {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        
-        .info-section p {
-            margin: 5px 0;
-        }
-        
-        .label {
-            font-weight: bold;
-            color: #d93025;
-        }
-        
-        .observations {
-            margin: 15px 0;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            border-left: 4px solid #d93025;
-            width: 100%;
-            word-wrap: break-word;
-        }
-        
-        h3 {
-            color: #d93025;
-            border-bottom: 1px solid #eaeaea;
-            padding-bottom: 5px;
-            width: 100%;
-        }
-        
-        /* Tabla responsive */
-        .table-responsive {
-            overflow-x: auto;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 500px; /* Ancho mínimo para mantener la legibilidad */
-        }
-        
-        th {
-            background-color: #d93025;
-            color: white;
-            text-align: left;
-            padding: 8px;
-            font-size: 14px;
-        }
-        
-        td {
-            padding: 8px;
-            border-bottom: 1px solid #eaeaea;
-            font-size: 14px;
-        }
-        
-        td:nth-child(2) {
-            white-space: normal;
-            word-break: break-word;
-        }
-        
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        
-        .total-section {
-            text-align: right;
-            margin-top: 20px;
-            width: 100%;
-        }
-        
-        .total {
-            font-size: 16px;
-            font-weight: bold;
-            color: #d93025;
-        }
-        
-        .no-products {
-            text-align: center;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            color: #666;
-            font-style: italic;
-            width: 100%;
-        }
-        
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-            border-top: 1px solid #eaeaea;
-            padding-top: 15px;
-            width: 100%;
-        }
-        
-        /* Media queries para dispositivos más grandes */
-        @media (min-width: 768px) {
-            body {
-                padding: 20px;
-                max-width: 800px;
-            }
-            
-            .header {
-                flex-direction: row;
-                justify-content: space-between;
-                padding-bottom: 20px;
-            }
-            
-            .logo {
-                margin-bottom: 0;
-            }
-            
-            .title {
-                font-size: 24px;
-            }
-            
-            .info-container {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-            
-            .info-section {
-                flex: 1;
-                margin-bottom: 0;
-            }
-            
-            th, td {
-                padding: 10px 12px;
-                font-size: 16px;
-            }
-            
-            .total {
-                font-size: 18px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Detalle de Pedido</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 40px;
+      background: #f4f4f8;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo img {
+      height: 80px;
+    }
+    h1 {
+      text-align: center;
+      color: #2b2d42;
+      margin-bottom: 10px;
+    }
+    .info {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    .info div {
+      margin: 5px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      text-align: left;
+    }
+    th {
+      background-color: #e0e0e0;
+    }
+    .total {
+      text-align: right;
+      font-size: 18px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .observaciones {
+      margin-top: 20px;
+      font-style: italic;
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <img id="logoImage" class="logo" alt="Logo empresa" src="https://www.appsheet.com:443/fsimage.png?appid=00cd8d09-ecca-46dc-a407-2072bb5e31ed&datasource=google&filename=DocId%3D1YPBrOsAPF2g2YZKdGRjd1QO0ukSI16z7&signature=675dfc36596c91c5d26fb74eb235c605cd41d6abe9a672a756e7049a97e0279c&tableprovider=google&userid=5955407">
-        <h1 class="title">DETALLE DE PEDIDO</h1>
-    </div>
-    
-    <div class="info-container">
-        <div class="info-section">
-            <p><span class="label">Fecha:</span> <span id="fecha"></span></p>
-            <p><span class="label">Cliente:</span> <span id="cliente"></span></p>
-        </div>
-        <div class="info-section">
-            <p><span class="label">Estado:</span> <span id="estado"></span></p>
-            <p><span class="label">Número de Pedido:</span> <span id="numeroPedido"></span></p>
-        </div>
-    </div>
-    
-    <div class="observations">
-        <p><span class="label">Observaciones:</span> <span id="observaciones"></span></p>
-    </div>
-    
-    <h3>Productos</h3>
-    <div id="productosContainer">
-        <div class="table-responsive">
-            <table id="productosTabla">
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Descripción</th>
-                        <th>Cant.</th>
-                        <th>Precio unitario</th>
-                        <th>Desc.</th>
-                        <th>Precio final</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaProductos">
-                    <!-- Filas dinámicas se agregarán aquí -->
-                </tbody>
-            </table>
-        </div>
-        <div id="noProductsMessage" class="no-products" style="display: none;">
-            No hay productos para mostrar
-        </div>
-    </div>
-    
-    <div class="total-section">
-        <p class="total">Total pedido: <span id="totalPedido"></span></p>
-    </div>
-    
-    <div class="footer">
-        <p>© 2025 - Documento generado el <span id="fechaGeneracion"></span></p>
+  <div class="container">
+    <div class="logo">
+      <img src="https://drive.google.com/uc?export=view&id=1YPBrOsAPF2g2YZKdGRjd1QO0ukSI16z7" alt="Logo">
     </div>
 
-    <script>
-        // Función para obtener parámetros de la URL
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            var results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
-        
-        // Función para formatear números como moneda
-        function formatCurrency(amount) {
-            return '$ ' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        }
-        
-        // Función para formatear fecha
-        function formatDate(dateString) {
-            if (!dateString) return '';
-            
-            try {
-                const date = new Date(dateString);
-                
-                // Verificar si la fecha es válida
-                if (isNaN(date.getTime())) {
-                    return dateString; // Devolver la cadena original si no es una fecha válida
-                }
-                
-                // Formatear como DD/MM/YYYY
-                const day = date.getDate().toString().padStart(2, '0');
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const year = date.getFullYear();
-                
-                return `${day}/${month}/${year}`;
-            } catch (e) {
-                return dateString; // En caso de error, devolver la cadena original
-            }
-        }
-        
-        // Cargar datos desde los parámetros de la URL
-        document.addEventListener('DOMContentLoaded', function() {
-            // Datos del encabezado
-            document.getElementById('fecha').textContent = formatDate(getUrlParameter('fecha'));
-            document.getElementById('cliente').textContent = getUrlParameter('cliente') || '';
-            document.getElementById('estado').textContent = getUrlParameter('estado') || '';
-            document.getElementById('numeroPedido').textContent = getUrlParameter('numeroPedido') || '';
-            
-            // Manejar observaciones (mostrar guión si está vacío)
-            const obsValue = getUrlParameter('observaciones');
-            document.getElementById('observaciones').textContent = obsValue === '-' ? '' : obsValue;
-            
-            // Obtener productos desde URL
-            const productosData = getUrlParameter('productos');
-            const tablaProductos = document.getElementById('tablaProductos');
-            const tablaProductosElem = document.getElementById('productosTabla');
-            const noProductsMessage = document.getElementById('noProductsMessage');
-            let totalPedido = 0;
-            
-            if (productosData && productosData.trim() !== '') {
-                // La estructura esperada es: "codigo1|descripcion1|cantidad1|precioUnitario1|descuento1|precioFinal1, codigo2|..."
-                const productos = productosData.split(',');
-                
-                productos.forEach(producto => {
-                    const datos = producto.trim().split('|');
-                    if (datos.length >= 5) {
-                        const codigo = datos[0];
-                        const descripcion = datos[1];
-                        const cantidad = parseInt(datos[2]);
-                        const precioUnitario = parseFloat(datos[3]);
-                        const descuento = datos[4];
-                        
-                        // Si hay precio final proporcionado, usar ese, de lo contrario calcularlo
-                        let precioFinal;
-                        if (datos.length >= 6 && datos[5]) {
-                            precioFinal = parseFloat(datos[5]);
-                        } else {
-                            precioFinal = cantidad * precioUnitario;
-                        }
-                        
-                        totalPedido += precioFinal;
-                        
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${codigo}</td>
-                            <td>${descripcion}</td>
-                            <td>${cantidad}</td>
-                            <td>${formatCurrency(precioUnitario)}</td>
-                            <td>${descuento} %</td>
-                            <td>${formatCurrency(precioFinal)}</td>
-                        `;
-                        tablaProductos.appendChild(row);
-                    }
-                });
-                
-                tablaProductosElem.style.display = 'table';
-                noProductsMessage.style.display = 'none';
-            } else {
-                // No hay productos para mostrar
-                tablaProductosElem.style.display = 'none';
-                noProductsMessage.style.display = 'block';
-            }
-            
-            // Establecer el total
-            const totalParametro = getUrlParameter('total');
-            document.getElementById('totalPedido').textContent = totalParametro ? formatCurrency(totalParametro) : formatCurrency(totalPedido);
-            
-            // Fecha de generación
-            const today = new Date();
-            const day = today.getDate().toString().padStart(2, '0');
-            const month = (today.getMonth() + 1).toString().padStart(2, '0');
-            const year = today.getFullYear();
-            document.getElementById('fechaGeneracion').textContent = `${day}/${month}/${year}`;
-        });
-    </script>
+    <h1>DETALLE DE PEDIDO</h1>
+
+    <div class="info">
+      <div>📅 <strong>Fecha:</strong> <span id="Fecha"></span></div>
+      <div>👤 <strong>Cliente:</strong> <span id="Cliente"></span></div>
+      <div>📦 <strong>Estado:</strong> <span id="Estado"></span></div>
+    </div>
+
+    <div class="observaciones"><strong>📝 Observaciones:</strong> <span id="Observaciones"></span></div>
+
+    <table id="tabla-productos">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Descripción</th>
+          <th>Cant.</th>
+          <th>Precio unitario</th>
+          <th>Desc.</th>
+          <th>Precio final</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="total">💰 Total pedido: $<span id="TotalPedido"></span></div>
+  </div>
+
+  <script>
+    function getURLParameter(name) {
+      return decodeURIComponent(
+        (new RegExp('[?|&]' + name + '=' +
+          '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1]
+          .replace(/\+/g, '%20')) || null;
+    }
+
+    document.getElementById("Fecha").innerText = getURLParameter("fecha");
+    document.getElementById("Cliente").innerText = getURLParameter("cliente");
+    document.getElementById("Estado").innerText = getURLParameter("estado");
+    document.getElementById("Observaciones").innerText = getURLParameter("observaciones");
+    document.getElementById("TotalPedido").innerText = getURLParameter("total");
+
+    const tablaBody = document.querySelector("#tabla-productos tbody");
+    const productos = JSON.parse(getURLParameter("productos") || "[]");
+
+    productos.forEach(item => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${item.codigo}</td>
+        <td>${item.descripcion}</td>
+        <td>${item.cantidad}</td>
+        <td>$${item.precioUnitario}</td>
+        <td>${item.descuento}%</td>
+        <td>$${item.precioFinal}</td>
+      `;
+      tablaBody.appendChild(row);
+    });
+  </script>
 </body>
 </html>
