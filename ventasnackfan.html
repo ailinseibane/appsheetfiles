@@ -66,11 +66,10 @@
     }
   </style>
 </head>
-<body onload="window.print()">
-
+<body>
   <div class="container">
     <div class="logo">
-      <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="Logo">
+https://www.google.com/search?q=%3Cimg+src%3D%22https%3A%2F%2Facdn-us.mitiendanube.com%2Fstores%2F005%2F821%2F939%2Fthemes%2Fcommon%2Flogo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png%3F0%22+alt%3D%22Logo%22%3E&rlz=1C1AVFC_enAR1045AR1045&oq=%3Cimg+src%3D%22https%3A%2F%2Facdn-us.mitiendanube.com%2Fstores%2F005%2F821%2F939%2Fthemes%2Fcommon%2Flogo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png%3F0%22+alt%3D%22Logo%22%3E&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBBzU3OWowajeoAgiwAgHxBYOYa1aPpSGF&sourceid=chrome&ie=UTF-8
     </div>
 
     <h1>DETALLE DE PEDIDO</h1>
@@ -108,31 +107,38 @@
           .replace(/\+/g, '%20')) || null;
     }
 
+    function getParamArray(name) {
+      const raw = getURLParameter(name);
+      return raw ? raw.split(",") : [];
+    }
+
     document.getElementById("Fecha").innerText = getURLParameter("fecha");
     document.getElementById("Cliente").innerText = getURLParameter("cliente");
     document.getElementById("Estado").innerText = getURLParameter("estado");
     document.getElementById("Observaciones").innerText = getURLParameter("observaciones");
     document.getElementById("TotalPedido").innerText = getURLParameter("total");
 
-    const tablaBody = document.querySelector("#tabla-productos tbody");
-    const productos = JSON.parse(getURLParameter("productos") || "[]");
+    const codigos = getParamArray("codigos");
+    const descripciones = getParamArray("descripciones");
+    const cantidades = getParamArray("cantidades");
+    const preciosUnitarios = getParamArray("preciosUnitarios");
+    const descuentos = getParamArray("descuentos");
+    const preciosFinales = getParamArray("preciosFinales");
 
-    productos.forEach(item => {
+    const tablaBody = document.querySelector("#tabla-productos tbody");
+
+    for (let i = 0; i < codigos.length; i++) {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${item.codigo}</td>
-        <td>${item.descripcion}</td>
-        <td>${item.cantidad}</td>
-        <td>$${item.precioUnitario}</td>
-        <td>${item.descuento}%</td>
-        <td>$${item.precioFinal}</td>
+        <td>${codigos[i]}</td>
+        <td>${descripciones[i]}</td>
+        <td>${cantidades[i]}</td>
+        <td>$${preciosUnitarios[i]}</td>
+        <td>${descuentos[i]}%</td>
+        <td>$${preciosFinales[i]}</td>
       `;
       tablaBody.appendChild(row);
-    });
-
-   window.onload = function() {
-    window.print();
-  };
+    }
   </script>
 </body>
 </html>
