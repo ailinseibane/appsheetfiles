@@ -8,7 +8,7 @@
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 20px;
-      background: #f9f9fb;
+      background: #f4f0f2;
       color: #333;
     }
     .container {
@@ -23,25 +23,33 @@
       text-align: center;
       margin-bottom: 30px;
     }
+    .header img {
+      height: 80px;
+      margin-bottom: 10px;
+    }
     .header h1 {
       margin: 0;
-      color: #2b2d42;
+      color: #800020;
+      font-size: 28px;
+      text-transform: uppercase;
     }
     .category {
       margin-top: 40px;
     }
     .category h2 {
-      background: #e9ecef;
+      background: #f7d9df;
       padding: 10px 15px;
-      border-radius: 6px;
-      color: #2b2d42;
+      border-left: 6px solid #800020;
+      border-radius: 4px;
+      color: #800020;
       margin-bottom: 15px;
+      font-size: 20px;
     }
     .product {
       display: flex;
       align-items: center;
-      border-bottom: 1px solid #ddd;
-      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      padding: 12px 0;
       gap: 20px;
     }
     .product img {
@@ -49,24 +57,28 @@
       width: 60px;
       object-fit: cover;
       border-radius: 8px;
-      background: #eee;
+      background: #f2f2f2;
+      border: 1px solid #ccc;
     }
     .product-info {
       flex-grow: 1;
     }
     .product-name {
-      font-weight: bold;
+      font-weight: 600;
+      font-size: 16px;
       margin-bottom: 5px;
     }
     .product-price {
-      color: #28a745;
+      color: #228c22;
       font-size: 16px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
+      <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="Snack Fan Logo">
       <h1>Lista de precios <span id="Tipo"></span></h1>
     </div>
     <div id="contenido"></div>
@@ -85,7 +97,6 @@
       return raw ? raw.split(",") : [];
     }
 
-    // Obtener datos
     const categorias = getArrayParam("categorias");
     const nombres = getArrayParam("nombres");
     const precios = getArrayParam("precios");
@@ -94,7 +105,6 @@
 
     document.getElementById("Tipo").innerText = tipo;
 
-    // Agrupar productos por categoría
     const contenido = document.getElementById("contenido");
     const grupo = {};
 
@@ -108,7 +118,6 @@
       });
     }
 
-    // Renderizar por categoría
     for (const categoria in grupo) {
       const bloque = document.createElement("div");
       bloque.classList.add("category");
