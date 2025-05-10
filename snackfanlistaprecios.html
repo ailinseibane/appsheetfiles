@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Precios</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f9f9fb;
+      color: #333;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      margin: 0;
+      color: #2b2d42;
+    }
+    .category {
+      margin-top: 40px;
+    }
+    .category h2 {
+      background: #e9ecef;
+      padding: 10px 15px;
+      border-radius: 6px;
+      color: #2b2d42;
+      margin-bottom: 15px;
+    }
+    .product {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+      gap: 20px;
+    }
+    .product img {
+      height: 60px;
+      width: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee;
+    }
+    .product-info {
+      flex-grow: 1;
+    }
+    .product-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .product-price {
+      color: #28a745;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Lista de precios <span id="Tipo"></span></h1>
+    </div>
+    <div id="contenido"></div>
+  </div>
+
+  <script>
+    function getParam(name) {
+      return decodeURIComponent(
+        (new RegExp('[?|&]' + name + '=' +
+          '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1]
+          .replace(/\+/g, '%20')) || null;
+    }
+
+    function getArrayParam(name) {
+      const raw = getParam(name);
+      return raw ? raw.split(",") : [];
+    }
+
+    // Obtener datos
+    const categorias = getArrayParam("categorias");
+    const nombres = getArrayParam("nombres");
+    const precios = getArrayParam("precios");
+    const imagenes = getArrayParam("imagenes");
+    const tipo = getParam("tipo") || "";
+
+    document.getElementById("Tipo").innerText = tipo;
+
+    // Agrupar productos por categoría
+    const contenido = document.getElementById("contenido");
+    const grupo = {};
+
+    for (let i = 0; i < categorias.length; i++) {
+      const cat = categorias[i];
+      if (!grupo[cat]) grupo[cat] = [];
+      grupo[cat].push({
+        nombre: nombres[i],
+        precio: precios[i],
+        imagen: imagenes[i]
+      });
+    }
+
+    // Renderizar por categoría
+    for (const categoria in grupo) {
+      const bloque = document.createElement("div");
+      bloque.classList.add("category");
+      bloque.innerHTML = `<h2>${categoria}</h2>`;
+      grupo[categoria].forEach(p => {
+        bloque.innerHTML += `
+          <div class="product">
+            <img src="${p.imagen}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Img'">
+            <div class="product-info">
+              <div class="product-name">${p.nombre}</div>
+              <div class="product-price">$${p.precio}</div>
+            </div>
+          </div>
+        `;
+      });
+      contenido.appendChild(bloque);
+    }
+  </script>
+</body>
+</html>
