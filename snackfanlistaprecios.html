@@ -58,14 +58,25 @@
       page-break-inside: avoid;
     }
 
-    .category h2 {
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       background: #f7d9df;
       padding: 10px 15px;
       border-left: 6px solid #800020;
       border-radius: 4px;
-      color: #800020;
       margin-bottom: 15px;
+    }
+
+    .category-header h2 {
+      color: #800020;
       font-size: 20px;
+      margin: 0;
+    }
+
+    .category-header img {
+      height: 40px;
     }
 
     .product {
@@ -195,7 +206,12 @@
         for (const categoria in grupo) {
           const bloque = document.createElement("div");
           bloque.classList.add("category");
-          bloque.innerHTML = `<h2>${categoria}</h2>`;
+          bloque.innerHTML = `
+            <div class="category-header">
+              <h2>${categoria}</h2>
+              <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="logo categoria">
+            </div>`;
+
           grupo[categoria].forEach(p => {
             bloque.innerHTML += `
               <div class="product">
