@@ -13,45 +13,70 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 960px;
       margin: auto;
       background: white;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
     }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 8px;
-      margin-bottom: 20px;
-    }
+    .cover-page {
+  padding: 100px 20px 80px;
+  text-align: center;
+  page-break-after: always;
+  background: #fdf8fa;
+}
 
-    .logo img {
-      height: 80px;
-    }
+.cover-content {
+  text-align: center;
+  max-width: 600px;
+  margin: auto;
+}
 
-    .contact-minidata {
-      font-size: 13px;
-      color: #666;
-      text-align: right;
-    }
+.cover-logo img {
+  height: 140px;
+  margin-bottom: 30px;
+}
 
-    .contact-minidata a {
-      color: #666;
-      text-decoration: none;
-    }
+.cover-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #800020;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
 
-    .header h1 {
-      text-align: center;
-      color: #800020;
-      font-size: 28px;
-      text-transform: uppercase;
-      margin-bottom: 30px;
-    }
+.cover-subtitle {
+  font-size: 24px;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.cover-divider {
+  border: none;
+  border-top: 2px solid #800020;
+  width: 60%;
+  margin: 20px auto;
+}
+
+.cover-contact {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.cover-contact a {
+  color: #800020;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.cover-note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #888;
+}
+
 
     .category {
       margin-top: 40px;
@@ -67,6 +92,8 @@
       border-left: 6px solid #800020;
       border-radius: 4px;
       margin-bottom: 15px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     .category-header h2 {
@@ -80,118 +107,97 @@
     }
 
     .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
       gap: 20px;
     }
 
     .product {
-      border: 1px solid #eee;
+      width: calc(33.333% - 20px);
+      border: 1px solid #ddd;
       border-radius: 8px;
-      padding: 15px;
+      padding: 12px;
+      box-sizing: border-box;
       text-align: center;
-      background: #fafafa;
+      page-break-inside: avoid;
     }
 
     .product img {
       height: 120px;
-      width: auto;
+      width: 100%;
       object-fit: contain;
       margin-bottom: 10px;
     }
 
     .product-name {
-      font-weight: 600;
-      font-size: 16px;
+      font-weight: bold;
+      font-size: 14px;
       margin-bottom: 5px;
     }
 
     .product-description {
       font-size: 13px;
       color: #666;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
     }
 
     .product-price {
       color: #228c22;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: bold;
     }
 
     @media print {
-  body {
-    margin: 0;
-  }
+      body {
+        margin: 0;
+      }
 
-  .container {
-    box-shadow: none;
-    border-radius: 0;
-    padding: 10px 20px;
-  }
+      .container {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 20px;
+      }
 
-  .topbar {
-    page-break-before: avoid;
-    page-break-after: avoid;
-  }
+      .cover-page {
+        page-break-after: always;
+      }
 
-  .category {
-    page-break-inside: avoid;
-  }
+      .category {
+        page-break-inside: avoid;
+      }
 
-  .category-header {
-    page-break-after: avoid;
-  }
+      .category-header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        page-break-after: avoid;
+      }
 
-  .product {
-    page-break-inside: avoid;
-    break-inside: avoid;
-    padding: 10px 8px;
-    margin: 0;
-  }
-
-  .product img {
-    max-height: 80mm; /* por si alguna se sale */
-  }
-
-  .header h1 {
-    font-size: 22px;
-    margin-bottom: 15px;
-  }
-
-  .product-name {
-    font-size: 14px;
-  }
-
-  .product-description {
-    font-size: 12px;
-  }
-
-  .product-price {
-    font-size: 14px;
-  }
-
-  .category-header img {
-    height: 30px;
-  }
-}
-
+      .product {
+        page-break-inside: avoid;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="topbar">
-      <div class="logo">
-        <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="Snack Fan">
-      </div>
-      <div class="contact-minidata">
-        📞 236 4316825 · 📸 <a href="https://instagram.com/snackfanjunin" target="_blank">@snackfanjunin</a>
-      </div>
+    <!-- Carátula -->
+    <div class="cover-page">
+  <div class="cover-content">
+    <div class="cover-logo">
+      <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="Snack Fan">
     </div>
-
-    <div class="header">
-      <h1>Lista de precios <span id="Tipo"></span></h1>
+    <div class="cover-title">CATÁLOGO DE PRECIOS</div>
+    <div class="cover-subtitle" id="Tipo">MINORISTA</div>
+    <hr class="cover-divider">
+    <div class="cover-contact">
+      <div>📞 <strong>236 4316825</strong></div>
+      <div>📸 <a href="https://instagram.com/snackfanjunin" target="_blank">@snackfanjunin</a></div>
+      <div class="cover-note"><small>Activa “Imprimir gráficos de fondo” para ver los colores</small></div>
     </div>
+  </div>
+</div>
 
+    <!-- Catálogo -->
     <div id="contenido"></div>
   </div>
 
@@ -217,7 +223,17 @@
         const productos = [];
 
         for (let i = 1; i < lines.length; i++) {
-          const [codigo, nombre, descripcion, imagen, categoria, proveedor, precioBaseStr, porcMayStr, porcMinStr] = lines[i].split(",");
+          const [
+            codigo,
+            nombre,
+            descripcion,
+            imagen,
+            categoria,
+            proveedor,
+            precioBaseStr,
+            porcMayStr,
+            porcMinStr
+          ] = lines[i].split(",");
 
           const precioBase = parsePrecio(precioBaseStr);
           const porcMay = parsePrecio(porcMayStr);
@@ -254,18 +270,20 @@
               <h2>${categoria}</h2>
               <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="logo categoria">
             </div>
-            <div class="product-grid"></div>`;
+            <div class="product-grid"></div>
+          `;
 
           const grid = bloque.querySelector(".product-grid");
+
           grupo[categoria].forEach(p => {
-            const productoHTML = `
+            grid.innerHTML += `
               <div class="product">
-                <img src="${getImageUrl(p.imagen)}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/120x120?text=No+Img'">
+                <img src="${getImageUrl(p.imagen)}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/90x90?text=No+Img'">
                 <div class="product-name">${p.nombre}</div>
                 ${p.descripcion ? `<div class="product-description">${p.descripcion}</div>` : ""}
                 <div class="product-price">$${p.precio}</div>
-              </div>`;
-            grid.innerHTML += productoHTML;
+              </div>
+            `;
           });
 
           contenido.appendChild(bloque);
