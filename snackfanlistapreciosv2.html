@@ -119,18 +119,62 @@
     }
 
     @media print {
-      body {
-        margin: 0;
-      }
-      .container {
-        box-shadow: none;
-        border-radius: 0;
-        padding: 20px;
-      }
-      .topbar {
-        page-break-before: always;
-      }
-    }
+  body {
+    margin: 0;
+  }
+
+  .container {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 10px 20px;
+  }
+
+  .topbar {
+    page-break-before: avoid;
+    page-break-after: avoid;
+  }
+
+  .category {
+    page-break-inside: avoid;
+  }
+
+  .category-header {
+    page-break-after: avoid;
+  }
+
+  .product {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    padding: 10px 8px;
+    margin: 0;
+  }
+
+  .product img {
+    max-height: 80mm; /* por si alguna se sale */
+  }
+
+  .header h1 {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+
+  .product-name {
+    font-size: 14px;
+  }
+
+  .product-description {
+    font-size: 12px;
+  }
+
+  .product-price {
+    font-size: 14px;
+  }
+
+  .category-header img {
+    height: 30px;
+  }
+}
+
   </style>
 </head>
 <body>
