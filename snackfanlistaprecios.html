@@ -11,7 +11,6 @@
       background: #f4f0f2;
       color: #333;
     }
-
     .container {
       max-width: 900px;
       margin: auto;
@@ -20,44 +19,23 @@
       border-radius: 12px;
       box-shadow: 0 0 12px rgba(0,0,0,0.1);
     }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 8px;
-      margin-bottom: 20px;
-    }
-
-    .logo img {
-      height: 80px;
-    }
-
-    .contact-minidata {
-      font-size: 13px;
-      color: #666;
-      text-align: right;
-    }
-
-    .contact-minidata a {
-      color: #666;
-      text-decoration: none;
-    }
-
-    .header h1 {
+    .header {
       text-align: center;
+      margin-bottom: 30px;
+    }
+    .header img {
+      height: 80px;
+      margin-bottom: 10px;
+    }
+    .header h1 {
+      margin: 0;
       color: #800020;
       font-size: 28px;
       text-transform: uppercase;
-      margin-bottom: 30px;
     }
-
     .category {
       margin-top: 40px;
-      page-break-inside: avoid;
     }
-
     .category h2 {
       background: #f7d9df;
       padding: 10px 15px;
@@ -67,7 +45,6 @@
       margin-bottom: 15px;
       font-size: 20px;
     }
-
     .product {
       display: flex;
       align-items: center;
@@ -75,7 +52,6 @@
       padding: 12px 0;
       gap: 20px;
     }
-
     .product img {
       height: 60px;
       width: 60px;
@@ -84,111 +60,106 @@
       background: #f2f2f2;
       border: 1px solid #ccc;
     }
-
     .product-info {
       flex-grow: 1;
     }
-
     .product-name {
       font-weight: 600;
       font-size: 16px;
       margin-bottom: 5px;
     }
-
     .product-price {
       color: #228c22;
       font-size: 16px;
       font-weight: bold;
     }
-
-    @media print {
-      body {
-        margin: 0;
-      }
-      .container {
-        box-shadow: none;
-        border-radius: 0;
-        padding: 20px;
-      }
-      .topbar {
-        page-break-before: always;
-      }
-      .product {
-        page-break-inside: avoid;
-      }
-    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="topbar">
-      <div class="logo">
-        <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="Snack Fan">
-      </div>
-      <div class="contact-minidata">
-        📞 236 4316825 · 📸 <a href="https://instagram.com/snackfanjunin" target="_blank">@snackfanjunin</a>
-      </div>
-    </div>
-
     <div class="header">
+      <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="Snack Fan Logo">
       <h1>Lista de precios <span id="Tipo"></span></h1>
     </div>
-
     <div id="contenido"></div>
   </div>
 
+  <footer style="background:#800020; color:#fff; padding:20px; margin-top:40px; border-radius:0 0 12px 12px; font-size:14px;">
+    <div style="max-width: 900px; margin: auto;">
+      <strong style="font-size:16px; display:block; margin-bottom:10px;">CONTACTANOS</strong>
+      <div style="margin-bottom:5px;">📞 236 4316825</div>
+      <div style="margin-bottom:5px;">✉️ <a href="mailto:contacto@snackfan.com.ar" style="color:white; text-decoration: underline;">contacto@snackfan.com.ar</a></div>
+      <div style="margin-bottom:10px;">📍 Sarmiento 1133 - Junín BA</div>
+      <div style="margin-top:10px;">📸 Instagram: <a href="https://instagram.com/snackfanjunin" target="_blank" style="color:white; text-decoration: underline;">@snackfanjunin</a></div>
+    </div>
+  </footer>
+  
   <script>
-    function getParam(name) {
-      return decodeURIComponent(
-        (new RegExp('[?|&]' + name + '=' +
-          '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1]
-          .replace(/\+/g, '%20')) || null;
-    }
+  const tipo = new URLSearchParams(window.location.search).get("tipo") || "MINORISTA";
+  document.getElementById("Tipo").innerText = tipo;
 
-    function getArrayParam(name) {
-      const raw = getParam(name);
-      return raw ? raw.split(",") : [];
-    }
+  const sheetID = "1rY3gZy06vpngQtY4S7jp36FjDwmc0224Yy5YnUhAgqo";
+  const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:csv&sheet=ListaPreciosPublica`;
 
-    const categorias = getArrayParam("categorias");
-    const nombres = getArrayParam("nombres");
-    const precios = getArrayParam("precios");
-    const imagenes = getArrayParam("imagenes");
-    const tipo = getParam("tipo") || "";
+  fetch(sheetURL)
+    .then(response => response.text())
+    .then(csv => {
+      const rows = csv.split("\n").slice(1); // Quitar encabezado
+      const productos = rows.map(r => {
+        const columnas = r.split(",");
+        const codigo = columnas[0];
+        const nombre = columnas[1];
+        const descripcion = columnas[2];
+        const imagen = columnas[3];
+        const categoria = columnas[4];
+        const proveedor = columnas[5];
+        const precioBase = parseFloat(columnas[6]) || 0;
+        const porcMay = parseFloat(columnas[7]) || 0;
+        const porcMin = parseFloat(columnas[8]) || 0;
 
-    document.getElementById("Tipo").innerText = tipo;
+        const precioFinal = tipo === "MAYORISTA"
+          ? precioBase * (1 + porcMay / 100)
+          : precioBase * (1 + porcMin / 100);
 
-    const contenido = document.getElementById("contenido");
-    const grupo = {};
-
-    for (let i = 0; i < categorias.length; i++) {
-      const cat = categorias[i];
-      if (!grupo[cat]) grupo[cat] = [];
-      grupo[cat].push({
-        nombre: nombres[i],
-        precio: precios[i],
-        imagen: imagenes[i]
+        return {
+          codigo,
+          nombre,
+          descripcion,
+          imagen,
+          categoria,
+          proveedor,
+          precio: precioFinal.toFixed(2)
+        };
       });
-    }
 
-    for (const categoria in grupo) {
-      const bloque = document.createElement("div");
-      bloque.classList.add("category");
-      bloque.innerHTML = `<h2>${categoria}</h2>`;
-      grupo[categoria].forEach(p => {
-        bloque.innerHTML += `
-          <div class="product">
-            <img src="${p.imagen}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Img'">
-            <div class="product-info">
-              <div class="product-name">${p.nombre}</div>
-              <div class="product-price">$${p.precio}</div>
+      const grupo = {};
+      productos.forEach(p => {
+        if (!grupo[p.categoria]) grupo[p.categoria] = [];
+        grupo[p.categoria].push(p);
+      });
+
+      const contenido = document.getElementById("contenido");
+
+      for (const categoria in grupo) {
+        const bloque = document.createElement("div");
+        bloque.classList.add("category");
+        bloque.innerHTML = `<h2>${categoria}</h2>`;
+        grupo[categoria].forEach(p => {
+          bloque.innerHTML += `
+            <div class="product">
+              <img src="${p.imagen}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Img'">
+              <div class="product-info">
+                <div class="product-name">${p.nombre}</div>
+                <div class="product-price">$${p.precio}</div>
+              </div>
             </div>
-          </div>
-        `;
-      });
-      contenido.appendChild(bloque);
-    }
-  </script>
+          `;
+        });
+        contenido.appendChild(bloque);
+      }
+    });
+</script>
+
 </body>
 </html>
 
