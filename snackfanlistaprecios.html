@@ -98,30 +98,26 @@
   const tipo = new URLSearchParams(window.location.search).get("tipo") || "MINORISTA";
   document.getElementById("Tipo").innerText = tipo;
 
-  const sheetID = "1rY3gZy06vpngQtY4S7jp36FjDwmc0224Yy5YnUhAgqo";
-  const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:csv&sheet=ListaPreciosPublica`;
+  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZsx6ZE1gGg6vWsLWLjpUEDTfJxPa9ZYYjtlLT85N0OL-T3J0Q1LW8c0CBpufS3RXLRhWfH2lZTutU/pub?gid=1314104074&single=true&output=csv";
 
   fetch(sheetURL)
     .then(response => response.text())
     .then(csv => {
-      const rows = csv.split("\n").slice(1); // Quitar encabezado
-      const productos = rows.map(r => {
-        const columnas = r.split(",");
-        const codigo = columnas[0];
-        const nombre = columnas[1];
-        const descripcion = columnas[2];
-        const imagen = columnas[3];
-        const categoria = columnas[4];
-        const proveedor = columnas[5];
-        const precioBase = parseFloat(columnas[6]) || 0;
-        const porcMay = parseFloat(columnas[7]) || 0;
-        const porcMin = parseFloat(columnas[8]) || 0;
+      const lines = csv.split("\n").filter(r => r.trim() !== "");
+      const productos = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const [codigo, nombre, descripcion, imagen, categoria, proveedor, precioBaseStr, porcMayStr, porcMinStr] = lines[i].split(",");
+
+        const precioBase = parseFloat(precioBaseStr) || 0;
+        const porcMay = parseFloat(porcMayStr) || 0;
+        const porcMin = parseFloat(porcMinStr) || 0;
 
         const precioFinal = tipo === "MAYORISTA"
           ? precioBase * (1 + porcMay / 100)
           : precioBase * (1 + porcMin / 100);
 
-        return {
+        productos.push({
           codigo,
           nombre,
           descripcion,
@@ -129,8 +125,8 @@
           categoria,
           proveedor,
           precio: precioFinal.toFixed(2)
-        };
-      });
+        });
+      }
 
       const grupo = {};
       productos.forEach(p => {
@@ -150,6 +146,7 @@
               <img src="${p.imagen}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Img'">
               <div class="product-info">
                 <div class="product-name">${p.nombre}</div>
+                ${p.descripcion ? `<div class="product-description">${p.descripcion}</div>` : ""}
                 <div class="product-price">$${p.precio}</div>
               </div>
             </div>
@@ -159,6 +156,7 @@
       }
     });
 </script>
+
 
 </body>
 </html>
