@@ -119,6 +119,33 @@
       font-weight: bold;
     }
 
+    .whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  background: #25D366;
+  border-radius: 50%;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+.whatsapp-float img {
+  width: 36px;
+  height: 36px;
+  display: block;
+}
+.whatsapp-float:hover {
+  transform: scale(1.1);
+}
+
+@media print {
+  .whatsapp-float {
+    display: none;
+  }
+}
+
+
     @media print {
       body {
         margin: 0;
