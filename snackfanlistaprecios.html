@@ -185,80 +185,89 @@
   </div>
 
   <script>
-    const tipo = new URLSearchParams(window.location.search).get("tipo") || "MINORISTA";
-    document.getElementById("Tipo").innerText = tipo;
+  const tipo = new URLSearchParams(window.location.search).get("tipo") || "MINORISTA";
+  document.getElementById("Tipo").innerText = tipo;
 
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZsx6ZE1gGg6vWsLWLjpUEDTfJxPa9ZYYjtlLT85N0OL-T3J0Q1LW8c0CBpufS3RXLRhWfH2lZTutU/pub?gid=1314104074&single=true&output=csv";
+  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZsx6ZE1gGg6vWsLWLjpUEDTfJxPa9ZYYjtlLT85N0OL-T3J0Q1LW8c0CBpufS3RXLRhWfH2lZTutU/pub?gid=1314104074&single=true&output=csv";
 
-    function getImageUrl(filename) {
-      return `https://www.appsheet.com/template/gettablefileurl?appName=Gestionstock-5955407&tableName=items&fileName=${encodeURIComponent(filename)}`;
-    }
+  function getImageUrl(filename) {
+    return `https://www.appsheet.com/template/gettablefileurl?appName=Gestionstock-5955407&tableName=items&fileName=${encodeURIComponent(filename)}`;
+  }
 
-    function parsePrecio(valor) {
-      if (!valor) return 0;
-      return parseFloat(valor.replace(/"/g, "").replace(/\./g, "").replace(",", ".")) || 0;
-    }
+  function parsePrecio(valor) {
+    if (!valor) return 0;
+    return parseFloat(valor.replace(/"/g, "").replace(/\./g, "").replace(",", ".")) || 0;
+  }
 
-    fetch(sheetURL)
-      .then(response => response.text())
-      .then(csv => {
-        const lines = csv.split("\n").filter(r => r.trim() !== "");
-        const productos = [];
+  function parsePorcentaje(valor) {
+    if (!valor) return 0;
+    const limpio = valor.replace(/[^0-9.,-]/g, "").replace(",", ".");
+    return parseFloat(limpio) || 0;
+  }
 
-        for (let i = 1; i < lines.length; i++) {
-          const [codigo, nombre, descripcion, imagen, categoria, proveedor, precioBaseStr, porcMayStr, porcMinStr] = lines[i].split(",");
+  fetch(sheetURL)
+    .then(response => response.text())
+    .then(csv => {
+      const lines = csv.split("\n").filter(r => r.trim() !== "");
+      const productos = [];
 
-          const precioBase = parsePrecio(precioBaseStr);
-          const porcMay = parsePrecio(porcMayStr);
-          const porcMin = parsePrecio(porcMinStr);
+      for (let i = 1; i < lines.length; i++) {
+        const [codigo, nombre, descripcion, imagen, categoria, proveedor, precioBaseStr, porcMayStr, porcMinStr] = lines[i].split(",");
 
-          const precioFinal = tipo === "MAYORISTA"
-            ? precioBase * (1 + porcMay / 100)
-            : precioBase * (1 + porcMin / 100);
+        const precioBase = parsePrecio(precioBaseStr);
+        const porcMay = parsePorcentaje(porcMayStr);
+        const porcMin = parsePorcentaje(porcMinStr);
 
-          productos.push({
-            codigo,
-            nombre,
-            descripcion,
-            imagen,
-            categoria,
-            proveedor,
-            precio: precioFinal.toFixed(2)
-          });
-        }
+        const precioFinal = tipo === "MAYORISTA"
+          ? precioBase * (1 + porcMay / 100)
+          : precioBase * (1 + porcMin / 100);
 
-        const grupo = {};
-        productos.forEach(p => {
-          if (!grupo[p.categoria]) grupo[p.categoria] = [];
-          grupo[p.categoria].push(p);
+        console.log(`[${nombre}] Base: ${precioBase} | %${tipo}: ${tipo === "MAYORISTA" ? porcMay : porcMin} | Final: $${precioFinal.toFixed(2)}`);
+
+        productos.push({
+          codigo,
+          nombre,
+          descripcion,
+          imagen,
+          categoria,
+          proveedor,
+          precio: precioFinal.toFixed(2)
         });
+      }
 
-        const contenido = document.getElementById("contenido");
-
-        for (const categoria in grupo) {
-          const bloque = document.createElement("div");
-          bloque.classList.add("category");
-          bloque.innerHTML = `
-            <div class="category-header">
-              <h2>${categoria}</h2>
-              <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="logo categoria">
-            </div>`;
-
-          grupo[categoria].forEach(p => {
-            bloque.innerHTML += `
-              <div class="product">
-                <img src="${getImageUrl(p.imagen)}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/90x90?text=No+Img'">
-                <div class="product-info">
-                  <div class="product-name">${p.nombre}</div>
-                  ${p.descripcion ? `<div class="product-description">${p.descripcion}</div>` : ""}
-                  <div class="product-price">$${p.precio}</div>
-                </div>
-              </div>
-            `;
-          });
-          contenido.appendChild(bloque);
-        }
+      const grupo = {};
+      productos.forEach(p => {
+        if (!grupo[p.categoria]) grupo[p.categoria] = [];
+        grupo[p.categoria].push(p);
       });
-  </script>
+
+      const contenido = document.getElementById("contenido");
+
+      for (const categoria in grupo) {
+        const bloque = document.createElement("div");
+        bloque.classList.add("category");
+        bloque.innerHTML = `
+          <div class="category-header">
+            <h2>${categoria}</h2>
+            <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="logo categoria">
+          </div>`;
+
+        grupo[categoria].forEach(p => {
+          bloque.innerHTML += `
+            <div class="product">
+              <img src="${getImageUrl(p.imagen)}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/90x90?text=No+Img'">
+              <div class="product-info">
+                <div class="product-name">${p.nombre}</div>
+                ${p.descripcion ? `<div class="product-description">${p.descripcion}</div>` : ""}
+                <div class="product-price">$${p.precio}</div>
+              </div>
+            </div>
+          `;
+        });
+        contenido.appendChild(bloque);
+      }
+    });
+</script>
+
 </body>
 </html>
