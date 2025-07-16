@@ -77,6 +77,8 @@
     <div class="info">
       <div>📅 <strong>Fecha:</strong> <span id="Fecha"></span></div>
       <div>👤 <strong>Cliente:</strong> <span id="Cliente"></span></div>
+      <div>🗺️ <strong>Domicilio de entrega:</strong> <span id="Domicilio"></span></div>
+      <div>📞 <strong>Teléfono:</strong> <span id="Telefono"></span></div>
       <div>📦 <strong>Estado:</strong> <span id="Estado"></span></div>
     </div>
 
@@ -117,6 +119,8 @@
     document.getElementById("Estado").innerText = getURLParameter("estado");
     document.getElementById("Observaciones").innerText = getURLParameter("observaciones");
     document.getElementById("TotalPedido").innerText = getURLParameter("total");
+    document.getElementById("Domicilio").innerText = getURLParameter("domicilio");
+    document.getElementById("Telefono").innerText = getURLParameter("telefono");
 
     const codigos = getParamArray("codigos");
     const descripciones = getParamArray("descripciones");
