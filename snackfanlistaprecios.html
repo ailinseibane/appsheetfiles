@@ -2,13 +2,24 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Lista de Precios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lista de Precios · Snack Fan</title>
   <style>
+    :root {
+      --bordo: #800020;
+      --bordo-claro: #f7d9df;
+      --verde: #1f7a1f;
+      --gris: #666;
+      --fondo: #f4f0f2;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Roboto, sans-serif;
       margin: 0;
       padding: 20px;
-      background: #f4f0f2;
+      background: var(--fondo);
       color: #333;
     }
 
@@ -25,104 +36,158 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
       border-bottom: 2px solid #ddd;
-      padding-bottom: 8px;
-      margin-bottom: 20px;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
     }
 
-    .logo img {
-      height: 80px;
-    }
+    .logo img { height: 80px; display: block; }
 
     .contact-minidata {
-      font-size: 13px;
-      color: #666;
+      font-size: 14px;
+      color: var(--gris);
       text-align: right;
+      line-height: 1.7;
     }
 
     .contact-minidata a {
-      color: #666;
+      color: var(--gris);
       text-decoration: none;
+      display: block;
     }
 
     .header h1 {
       text-align: center;
-      color: #800020;
+      color: var(--bordo);
       font-size: 28px;
       text-transform: uppercase;
-      margin-bottom: 30px;
+      margin: 10px 0 16px;
     }
 
+    /* ---- Barra de búsqueda + categorías (queda fija arriba) ---- */
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: white;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .search {
+      width: 100%;
+      font-size: 16px; /* 16px evita que iPhone haga zoom al tocar */
+      padding: 11px 14px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .search:focus { border-color: var(--bordo); }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-top: 10px;
+      scrollbar-width: none;
+    }
+
+    .chips::-webkit-scrollbar { display: none; }
+
+    .chip {
+      flex: 0 0 auto;
+      border: 1px solid var(--bordo);
+      background: white;
+      color: var(--bordo);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .chip:active { background: var(--bordo-claro); }
+
+    /* ---- Categorías y productos ---- */
     .category {
-      margin-top: 40px;
-      page-break-inside: avoid;
+      margin-top: 28px;
+      scroll-margin-top: 120px; /* para que el título no quede tapado por la barra fija */
     }
 
     .category-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #f7d9df;
+      background: var(--bordo-claro);
       padding: 10px 15px;
-      border-left: 6px solid #800020;
+      border-left: 6px solid var(--bordo);
       border-radius: 4px;
-      margin-bottom: 15px;
+      margin-bottom: 6px;
     }
 
     .category-header h2 {
-      color: #800020;
+      color: var(--bordo);
       font-size: 20px;
       margin: 0;
     }
 
-    .category-header img {
-      height: 40px;
-    }
+    .category-header img { height: 36px; }
 
     .product {
       display: flex;
       align-items: center;
       border-bottom: 1px solid #eee;
-      padding: 16px 0;
-      gap: 24px;
+      padding: 14px 0;
+      gap: 18px;
       page-break-inside: avoid;
     }
 
     .product img {
+      flex: 0 0 auto;
       height: 90px;
       width: 90px;
       object-fit: contain;
-      border-radius: 8px;
-      background: #f2f2f2;
-      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #f7f7f7;
+      border: 1px solid #ddd;
       cursor: zoom-in;
-      transition: transform 0.15s;
     }
 
-    .product img:hover {
-      transform: scale(1.05);
-    }
-
-    .product-info {
-      flex-grow: 1;
-    }
+    .product-info { flex-grow: 1; min-width: 0; }
 
     .product-name {
       font-weight: 600;
       font-size: 16px;
-      margin-bottom: 5px;
+      line-height: 1.3;
+      margin-bottom: 4px;
     }
 
     .product-description {
-      font-size: 13px;
-      color: #666;
-      margin-top: 3px;
+      font-size: 14px;
+      color: var(--gris);
+      margin-bottom: 4px;
     }
 
     .product-price {
-      color: #228c22;
-      font-size: 16px;
-      font-weight: bold;
+      color: var(--verde);
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--gris);
+      padding: 30px 0;
+      display: none;
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--gris);
+      padding: 40px 0;
     }
 
     /* ---- Lightbox (imagen ampliada) ---- */
@@ -131,59 +196,48 @@
       position: fixed;
       inset: 0;
       z-index: 2000;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.88);
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
 
-    .lightbox.open {
-      display: flex;
-    }
+    .lightbox.open { display: flex; }
 
     .lightbox img {
-      max-width: 90vw;
-      max-height: 85vh;
+      max-width: 92vw;
+      max-height: 78vh;
       object-fit: contain;
       border-radius: 10px;
       background: white;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
     }
 
     .lightbox-caption {
       position: absolute;
-      bottom: 24px;
+      bottom: 28px;
       left: 0;
       right: 0;
       text-align: center;
       color: white;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 600;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.8);
       padding: 0 20px;
     }
 
     .lightbox-close {
       position: absolute;
       top: 16px;
-      right: 20px;
-      width: 44px;
-      height: 44px;
+      right: 16px;
+      width: 48px;
+      height: 48px;
       border: none;
       border-radius: 50%;
-      background: #800020;
+      background: var(--bordo);
       color: white;
-      font-size: 26px;
-      line-height: 44px;
-      text-align: center;
+      font-size: 28px;
+      line-height: 48px;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-      transition: transform 0.15s, background 0.15s;
-    }
-
-    .lightbox-close:hover {
-      background: #a3002a;
-      transform: scale(1.1);
     }
 
     .whatsapp-float {
@@ -195,37 +249,42 @@
       border-radius: 50%;
       padding: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      transition: transform 0.2s;
-    }
-    .whatsapp-float img {
-      width: 48px;
-      height: 48px;
-      display: block;
     }
 
-    .whatsapp-float:hover {
-      transform: scale(1.1);
-    }
+    .whatsapp-float img { width: 44px; height: 44px; display: block; }
 
-    @media print {
-      .whatsapp-float,
-      .lightbox {
-        display: none !important;
-      }
-    }
+    /* ---- Celular ---- */
+    @media (max-width: 600px) {
+      body { padding: 0; }
 
-    @media print {
-      body {
-        margin: 0;
-      }
       .container {
-        box-shadow: none;
         border-radius: 0;
-        padding: 20px;
+        box-shadow: none;
+        padding: 14px 14px 90px; /* espacio abajo para el botón de WhatsApp */
       }
-      .topbar {
-        page-break-before: always;
-      }
+
+      .logo img { height: 60px; }
+      .contact-minidata { font-size: 13px; }
+
+      .header h1 { font-size: 21px; }
+
+      .category-header h2 { font-size: 18px; }
+      .category-header img { height: 30px; }
+
+      .product { gap: 14px; padding: 12px 0; }
+      .product img { width: 80px; height: 80px; }
+      .product-name { font-size: 15px; }
+      .product-price { font-size: 18px; }
+
+      .whatsapp-float { bottom: 16px; right: 16px; }
+    }
+
+    /* ---- Impresión ---- */
+    @media print {
+      body { margin: 0; padding: 0; background: white; }
+      .container { box-shadow: none; border-radius: 0; padding: 20px; }
+      .whatsapp-float, .lightbox, .toolbar { display: none !important; }
+      .category { page-break-inside: avoid; }
     }
   </style>
 </head>
@@ -248,7 +307,8 @@
         <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="Snack Fan">
       </div>
       <div class="contact-minidata">
-        📞 236 4316825 · 📸 <a href="https://instagram.com/snackfanjunin" target="_blank">@snackfanjunin</a>
+        <a href="https://wa.me/5492364316825" target="_blank">📞 236 4316825</a>
+        <a href="https://instagram.com/snackfanjunin" target="_blank">📸 @snackfanjunin</a>
       </div>
     </div>
 
@@ -256,14 +316,21 @@
       <h1>Lista de precios <span id="Tipo"></span></h1>
     </div>
 
-    <div id="contenido"></div>
+    <div class="toolbar">
+      <input id="buscador" class="search" type="search" placeholder="🔍 Buscar producto..." autocomplete="off">
+      <div id="chips" class="chips"></div>
+    </div>
+
+    <div id="contenido"><div class="loading">Cargando precios…</div></div>
+    <div id="sinResultados" class="empty">No se encontraron productos.</div>
   </div>
 
   <script>
-  const tipo = new URLSearchParams(window.location.search).get("tipo") || "MINORISTA";
+  const tipo = (new URLSearchParams(window.location.search).get("tipo") || "MINORISTA").toUpperCase();
   document.getElementById("Tipo").innerText = tipo;
 
   const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZsx6ZE1gGg6vWsLWLjpUEDTfJxPa9ZYYjtlLT85N0OL-T3J0Q1LW8c0CBpufS3RXLRhWfH2lZTutU/pub?gid=1314104074&single=true&output=csv";
+  const logoURL = "https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0";
 
   function getImageUrl(filename) {
     return `https://www.appsheet.com/template/gettablefileurl?appName=Gestionstock-5955407&tableName=items&fileName=${encodeURIComponent(filename)}`;
@@ -280,18 +347,24 @@
     return parseFloat(limpio) || 0;
   }
 
+  // Formato argentino: $1.525,70
+  const formatoPrecio = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  function slug(texto) {
+    return "cat-" + texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-");
+  }
+
   // ---- Lightbox ----
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = document.getElementById("lightboxImg");
   const lightboxCaption = document.getElementById("lightboxCaption");
-  const lightboxClose = document.getElementById("lightboxClose");
 
   function abrirLightbox(src, nombre) {
     lightboxImg.src = src;
     lightboxImg.alt = nombre;
     lightboxCaption.textContent = nombre;
     lightbox.classList.add("open");
-    document.body.style.overflow = "hidden"; // bloquea el scroll de fondo
+    document.body.style.overflow = "hidden";
   }
 
   function cerrarLightbox() {
@@ -300,24 +373,37 @@
     document.body.style.overflow = "";
   }
 
-  lightboxClose.addEventListener("click", cerrarLightbox);
-
-  // Cerrar al hacer click fuera de la imagen
-  lightbox.addEventListener("click", e => {
-    if (e.target === lightbox) cerrarLightbox();
-  });
-
-  // Cerrar con la tecla Escape
+  document.getElementById("lightboxClose").addEventListener("click", cerrarLightbox);
+  lightbox.addEventListener("click", e => { if (e.target === lightbox) cerrarLightbox(); });
   document.addEventListener("keydown", e => {
     if (e.key === "Escape" && lightbox.classList.contains("open")) cerrarLightbox();
   });
 
-  // Delegación: un solo listener para todas las imágenes de producto
   document.getElementById("contenido").addEventListener("click", e => {
     const img = e.target.closest(".product img");
     if (img) abrirLightbox(img.src, img.alt);
   });
 
+  // ---- Buscador ----
+  document.getElementById("buscador").addEventListener("input", e => {
+    const q = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    let visibles = 0;
+
+    document.querySelectorAll(".category").forEach(cat => {
+      let enCategoria = 0;
+      cat.querySelectorAll(".product").forEach(prod => {
+        const coincide = !q || prod.dataset.busqueda.includes(q);
+        prod.style.display = coincide ? "" : "none";
+        if (coincide) enCategoria++;
+      });
+      cat.style.display = enCategoria ? "" : "none";
+      visibles += enCategoria;
+    });
+
+    document.getElementById("sinResultados").style.display = visibles ? "none" : "block";
+  });
+
+  // ---- Carga de datos ----
   fetch(sheetURL)
     .then(response => response.text())
     .then(csv => {
@@ -335,17 +421,7 @@
           ? precioBase * (1 + porcMay / 100)
           : precioBase * (1 + porcMin / 100);
 
-        console.log(`[${nombre}] Base: ${precioBase} | %${tipo}: ${tipo === "MAYORISTA" ? porcMay : porcMin} | Final: $${precioFinal.toFixed(2)}`);
-
-        productos.push({
-          codigo,
-          nombre,
-          descripcion,
-          imagen,
-          categoria,
-          proveedor,
-          precio: precioFinal.toFixed(2)
-        });
+        productos.push({ codigo, nombre, descripcion, imagen, categoria, proveedor, precio: precioFinal });
       }
 
       const grupo = {};
@@ -355,32 +431,52 @@
       });
 
       const contenido = document.getElementById("contenido");
+      const chips = document.getElementById("chips");
+      contenido.innerHTML = "";
 
       for (const categoria in grupo) {
+        const id = slug(categoria);
+
+        // Chip para saltar a la categoría
+        const chip = document.createElement("button");
+        chip.className = "chip";
+        chip.textContent = categoria;
+        chip.addEventListener("click", () => {
+          document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+        });
+        chips.appendChild(chip);
+
         const bloque = document.createElement("div");
-        bloque.classList.add("category");
-        bloque.innerHTML = `
+        bloque.className = "category";
+        bloque.id = id;
+
+        let html = `
           <div class="category-header">
             <h2>${categoria}</h2>
-            <img src="https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0" alt="logo categoria">
+            <img src="${logoURL}" alt="">
           </div>`;
 
         grupo[categoria].forEach(p => {
-          bloque.innerHTML += `
-            <div class="product">
-              <img src="${getImageUrl(p.imagen)}" alt="${p.nombre}" title="Click para ampliar" onerror="this.src='https://via.placeholder.com/90x90?text=No+Img'">
+          const busqueda = `${p.nombre} ${p.descripcion || ""} ${categoria}`
+            .toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          html += `
+            <div class="product" data-busqueda="${busqueda.replace(/"/g, "")}">
+              <img src="${getImageUrl(p.imagen)}" alt="${p.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/90x90?text=Sin+foto'">
               <div class="product-info">
                 <div class="product-name">${p.nombre}</div>
                 ${p.descripcion ? `<div class="product-description">${p.descripcion}</div>` : ""}
-                <div class="product-price">$${p.precio}</div>
+                <div class="product-price">$${formatoPrecio.format(p.precio)}</div>
               </div>
-            </div>
-          `;
+            </div>`;
         });
+
+        bloque.innerHTML = html;
         contenido.appendChild(bloque);
       }
+    })
+    .catch(() => {
+      document.getElementById("contenido").innerHTML = '<div class="loading">No se pudieron cargar los precios. Probá recargar la página.</div>';
     });
-</script>
-
+  </script>
 </body>
 </html>
