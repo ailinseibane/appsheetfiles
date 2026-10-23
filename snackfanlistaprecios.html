@@ -326,25 +326,53 @@
   </div>
 
   <script>
-  const tipo = (new URLSearchParams(window.location.search).get("tipo") || "MINORISTA").toUpperCase();
-  document.getElementById("Tipo").innerText = tipo;
+  // ================== CONFIGURACIÓN DE ESTA LISTA ==================
+  // Cada lista (minorista / mayorista) es un archivo aparte con su propio CSV.
+  // El CSV ya trae el precio FINAL: no hay costos ni porcentajes en la página.
+  const TIPO = "MAYORISTA";
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZsx6ZE1gGg6vWsLWLjpUEDTfJxPa9ZYYjtlLT85N0OL-T3J0Q1LW8c0CBpufS3RXLRhWfH2lZTutU/pub?gid=1314104074&single=true&output=csv";
+  // ==================================================================
 
-  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZsx6ZE1gGg6vWsLWLjpUEDTfJxPa9ZYYjtlLT85N0OL-T3J0Q1LW8c0CBpufS3RXLRhWfH2lZTutU/pub?gid=1314104074&single=true&output=csv";
+  document.getElementById("Tipo").innerText = TIPO;
+
   const logoURL = "https://acdn-us.mitiendanube.com/stores/005/821/939/themes/common/logo-1951200950-1739356298-6be1913107e967b9582522cb6ccf771a1739356298.png?0";
+  const sinFoto = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="90" height="90"><rect width="90" height="90" fill="#f2f2f2"/><text x="45" y="50" font-family="sans-serif" font-size="11" fill="#999" text-anchor="middle">Sin foto</text></svg>');
 
   function getImageUrl(filename) {
+    if (!filename) return sinFoto;
     return `https://www.appsheet.com/template/gettablefileurl?appName=Gestionstock-5955407&tableName=items&fileName=${encodeURIComponent(filename)}`;
   }
 
-  function parsePrecio(valor) {
-    if (!valor) return 0;
-    return parseFloat(valor.replace(/"/g, "").replace(/\./g, "").replace(",", ".")) || 0;
+  // Parser de CSV que respeta comillas (nombres con comas, precios "1.525,70", etc.)
+  function parseCSV(texto) {
+    const filas = [];
+    let fila = [], campo = "", enComillas = false;
+    for (let i = 0; i < texto.length; i++) {
+      const c = texto[i];
+      if (enComillas) {
+        if (c === '"' && texto[i + 1] === '"') { campo += '"'; i++; }
+        else if (c === '"') enComillas = false;
+        else campo += c;
+      } else if (c === '"') enComillas = true;
+      else if (c === ",") { fila.push(campo); campo = ""; }
+      else if (c === "\n") { fila.push(campo); filas.push(fila); fila = []; campo = ""; }
+      else if (c !== "\r") campo += c;
+    }
+    if (campo || fila.length) { fila.push(campo); filas.push(fila); }
+    return filas.filter(f => f.some(v => v.trim() !== ""));
   }
 
-  function parsePorcentaje(valor) {
+  // Acepta "1.525,70", "1525,70", "1525.70" o "$ 1.525"
+  function parsePrecio(valor) {
     if (!valor) return 0;
-    const limpio = valor.replace(/[^0-9.,-]/g, "").replace(",", ".");
-    return parseFloat(limpio) || 0;
+    let v = valor.replace(/[^0-9.,-]/g, "");
+    if (v.includes(",")) v = v.replace(/\./g, "").replace(",", ".");      // "1.525,70" → 1525.70
+    else if (/^-?\d{1,3}(\.\d{3})+$/.test(v)) v = v.replace(/\./g, "");  // "1.525" → 1525 (punto de miles)
+    return parseFloat(v) || 0;
+  }
+
+  function escapar(texto) {
+    return String(texto ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
   // Formato argentino: $1.525,70
@@ -404,25 +432,33 @@
   });
 
   // ---- Carga de datos ----
-  fetch(sheetURL)
-    .then(response => response.text())
+  fetch(CSV_URL)
+    .then(response => {
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return response.text();
+    })
     .then(csv => {
-      const lines = csv.split("\n").filter(r => r.trim() !== "");
-      const productos = [];
+      const filas = parseCSV(csv);
+      // Se leen las columnas por nombre de encabezado, así el orden en la planilla no importa
+      const norm = t => t.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+      const enc = filas[0].map(norm);
+      // Acepta varios nombres posibles para cada columna
+      const col = (...nombres) => enc.findIndex(h => nombres.includes(h));
+      const iNombre = col("nombre", "producto"),
+            iDesc   = col("descripcion", "desc"),
+            iImg    = col("imagen", "foto"),
+            iCat    = col("categoria", "cat"),
+            iPrecio = col("precio", "precio final");
 
-      for (let i = 1; i < lines.length; i++) {
-        const [codigo, nombre, descripcion, imagen, categoria, proveedor, precioBaseStr, porcMayStr, porcMinStr] = lines[i].split(",");
-
-        const precioBase = parsePrecio(precioBaseStr);
-        const porcMay = parsePorcentaje(porcMayStr);
-        const porcMin = parsePorcentaje(porcMinStr);
-
-        const precioFinal = tipo === "MAYORISTA"
-          ? precioBase * (1 + porcMay / 100)
-          : precioBase * (1 + porcMin / 100);
-
-        productos.push({ codigo, nombre, descripcion, imagen, categoria, proveedor, precio: precioFinal });
-      }
+      const productos = filas.slice(1)
+        .map(f => ({
+          nombre: (f[iNombre] || "").trim(),
+          descripcion: iDesc >= 0 ? (f[iDesc] || "").trim() : "",
+          imagen: iImg >= 0 ? (f[iImg] || "").trim() : "",
+          categoria: (f[iCat] || "").trim() || "Otros",
+          precio: parsePrecio(f[iPrecio])
+        }))
+        .filter(p => p.nombre && p.precio > 0); // oculta filas vacías o sin precio
 
       const grupo = {};
       productos.forEach(p => {
@@ -452,19 +488,19 @@
 
         let html = `
           <div class="category-header">
-            <h2>${categoria}</h2>
+            <h2>${escapar(categoria)}</h2>
             <img src="${logoURL}" alt="">
           </div>`;
 
         grupo[categoria].forEach(p => {
-          const busqueda = `${p.nombre} ${p.descripcion || ""} ${categoria}`
+          const busqueda = `${p.nombre} ${p.descripcion} ${categoria}`
             .toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           html += `
-            <div class="product" data-busqueda="${busqueda.replace(/"/g, "")}">
-              <img src="${getImageUrl(p.imagen)}" alt="${p.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/90x90?text=Sin+foto'">
+            <div class="product" data-busqueda="${escapar(busqueda)}">
+              <img src="${escapar(getImageUrl(p.imagen))}" alt="${escapar(p.nombre)}" loading="lazy" onerror="this.onerror=null;this.src=sinFoto">
               <div class="product-info">
-                <div class="product-name">${p.nombre}</div>
-                ${p.descripcion ? `<div class="product-description">${p.descripcion}</div>` : ""}
+                <div class="product-name">${escapar(p.nombre)}</div>
+                ${p.descripcion ? `<div class="product-description">${escapar(p.descripcion)}</div>` : ""}
                 <div class="product-price">$${formatoPrecio.format(p.precio)}</div>
               </div>
             </div>`;
